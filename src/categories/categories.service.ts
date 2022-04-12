@@ -41,8 +41,8 @@ export class CategoriesService {
     return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, { name }: UpdateCategoryDto) {
+    await this.categoryModel.updateOne({ _id: id }, { $set: { name } });
   }
 
   remove(id: number) {
