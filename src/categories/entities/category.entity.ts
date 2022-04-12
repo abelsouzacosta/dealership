@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Car } from 'src/cars/entities/car.entity';
 
@@ -11,8 +11,10 @@ export class Category {
   name: string;
 
   @Prop({
-    required: true,
+    required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
   })
-  cars: Car[];
+  cars?: Car[];
 }
+
+export const CategorySchema = SchemaFactory.createForClass(Category);
