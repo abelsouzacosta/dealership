@@ -49,8 +49,10 @@ export class CarsService {
     return cars;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} car`;
+  async findOne(id: string) {
+    const car = await this.carModel.findById(id);
+
+    return car;
   }
 
   update(id: number, updateCarDto: UpdateCarDto) {
