@@ -29,8 +29,10 @@ export class CategoriesService {
     });
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll(): Promise<Array<Category>> {
+    const categories = await this.categoryModel.find();
+
+    return categories;
   }
 
   findOne(id: number) {
