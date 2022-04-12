@@ -76,7 +76,7 @@ export class CategoriesService {
     await this.categoryModel.updateOne({ _id: id }, { $set: { name } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    await this.categoryModel.deleteOne({ _id: id });
   }
 }
