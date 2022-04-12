@@ -23,6 +23,25 @@ export class CarsService {
       );
   }
 
+  private async throwsExceptionIfLicensePlateIsAlreadyRegisteredForAnotherCarInstance(
+    id: string,
+    license_plate: string,
+  ) {
+    const carFoundById = await this.carModel.findById(id);
+    const carFoundByLicensePlate = await this.carModel.findOne({
+      license_plate,
+    });
+
+    if (
+      carFoundByLicensePlate &&
+      carFoundById._id !== carFoundByLicensePlate._id
+    )
+      throw new HttpException(
+        `This license plate is alreadu registered for another car`,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+  }
+
   private async throwsExceptionIfCarInstanceNotExists(id: string) {
     const carFound = await this.carModel.findById(id);
 
@@ -64,8 +83,21 @@ export class CarsService {
     return car;
   }
 
-  update(id: number, updateCarDto: UpdateCarDto) {
-    return `This action updates a #${id} car`;
+  async update(
+    id: string,
+    {
+      brand,
+      model,
+      color,
+      fabrication_year,
+      model_year,
+      license_plate,
+    }: UpdateCarDto,
+  ) {
+    await this.throwsExceptionIfLicensePlateIsAlreadyRegisteredForAnotherCarInstance(
+      id,
+      license_plate,
+    );
   }
 
   remove(id: number) {
