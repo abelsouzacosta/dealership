@@ -21,6 +21,23 @@ export class CategoriesService {
       );
   }
 
+  async throwsExceptionIfCategoryNameIsAlreadyTakenByAnotherInstance(
+    id: string,
+    name: string,
+  ) {
+    const categoryFoundByName = await this.categoryModel.findOne({ name });
+    const categoryFoundById = await this.categoryModel.findById(id);
+
+    if (
+      categoryFoundByName &&
+      categoryFoundByName._id !== categoryFoundById._id
+    )
+      throw new HttpException(
+        `This name is arealdy taken by another category instance`,
+        HttpStatus.CONFLICT,
+      );
+  }
+
   async create({ name }: CreateCategoryDto) {
     await this.throwsExceptionIfCategoryNameIsAlreadyTaken(name);
 
@@ -42,6 +59,11 @@ export class CategoriesService {
   }
 
   async update(id: string, { name }: UpdateCategoryDto) {
+    await this.throwsExceptionIfCategoryNameIsAlreadyTakenByAnotherInstance(
+      id,
+      name,
+    );
+
     await this.categoryModel.updateOne({ _id: id }, { $set: { name } });
   }
 
