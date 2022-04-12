@@ -23,6 +23,13 @@ export class CarsService {
       );
   }
 
+  private async throwsExceptionIfCarInstanceNotExists(id: string) {
+    const carFound = await this.carModel.findById(id);
+
+    if (!carFound)
+      throw new HttpException(`Car not found`, HttpStatus.NOT_FOUND);
+  }
+
   async create({
     brand,
     model,
@@ -50,6 +57,8 @@ export class CarsService {
   }
 
   async findOne(id: string) {
+    await this.throwsExceptionIfCarInstanceNotExists(id);
+
     const car = await this.carModel.findById(id);
 
     return car;
