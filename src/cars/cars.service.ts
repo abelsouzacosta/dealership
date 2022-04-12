@@ -116,7 +116,9 @@ export class CarsService {
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} car`;
+  async remove(id: string) {
+    await this.throwsExceptionIfCarInstanceNotExists(id);
+
+    await this.carModel.deleteOne({ _id: id });
   }
 }
