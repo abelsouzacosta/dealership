@@ -25,6 +25,8 @@ export class CategoriesService {
     id: string,
     name: string,
   ) {
+    await this.throwsExceptionIfCategoryIsNotFoundById(id);
+
     const categoryFoundByName = await this.categoryModel.findOne({ name });
     const categoryFoundById = await this.categoryModel.findById(id);
 
@@ -36,6 +38,13 @@ export class CategoriesService {
         `This name is arealdy taken by another category instance`,
         HttpStatus.CONFLICT,
       );
+  }
+
+  async throwsExceptionIfCategoryIsNotFoundById(id: string) {
+    const category = await this.categoryModel.findById(id);
+
+    if (!category)
+      throw new HttpException(`Category not found`, HttpStatus.NOT_FOUND);
   }
 
   async create({ name }: CreateCategoryDto) {
