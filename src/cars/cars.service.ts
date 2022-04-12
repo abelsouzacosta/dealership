@@ -98,6 +98,22 @@ export class CarsService {
       id,
       license_plate,
     );
+
+    await this.carModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          brand,
+          model,
+          color,
+          fabrication_year,
+          model_year,
+          license_plate,
+        },
+      },
+    );
   }
 
   remove(id: number) {
