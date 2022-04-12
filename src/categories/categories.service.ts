@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -11,7 +11,19 @@ export class CategoriesService {
     @InjectModel('Category') private readonly categoryModel: Model<Category>,
   ) {}
 
+  async throwsExceptionIfCategoryNameIsAlreadyTaken(name: string) {
+    const category = await this.categoryModel.findOne({ name });
+
+    if (category)
+      throw new HttpException(
+        `Category name already taken`,
+        HttpStatus.CONFLICT,
+      );
+  }
+
   async create({ name }: CreateCategoryDto) {
+    await this.throwsExceptionIfCategoryNameIsAlreadyTaken(name);
+
     await this.categoryModel.create({
       name,
     });
