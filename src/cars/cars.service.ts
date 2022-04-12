@@ -44,7 +44,9 @@ export class CarsService {
   }
 
   async findAll(): Promise<Array<Car>> {
-    return await this.carModel.find();
+    const cars = await this.carModel.find();
+
+    return cars;
   }
 
   findOne(id: number) {
