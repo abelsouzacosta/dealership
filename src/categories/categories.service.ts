@@ -109,6 +109,34 @@ export class CategoriesService {
     );
   }
 
+  async removeCarFromCategory(id: string, { car_id }: AddCarToCategoryDto) {
+    await this.thorwsExceptionIfCarNotExists(car_id);
+    await this.throwsExceptionIfCategoryIsNotFoundById(id);
+
+    const { cars } = await this.categoryModel.findById(id);
+
+    const carFound = cars.find((car) => String(car._id) === car_id);
+
+    if (!carFound)
+      throw new HttpException(
+        `The car #${car_id} is not setted to category #${id}`,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+
+    const indexOfCarFound = cars.indexOf(carFound);
+
+    cars.splice(indexOfCarFound, 1);
+
+    const newArrayOfCars: Array<Car> = cars;
+
+    await this.categoryModel.updateOne(
+      { _id: id },
+      {
+        $set: { cars: newArrayOfCars },
+      },
+    );
+  }
+
   async update(id: string, { name }: UpdateCategoryDto) {
     await this.throwsExceptionIfCategoryNameIsAlreadyTakenByAnotherInstance(
       id,

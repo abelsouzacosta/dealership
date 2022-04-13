@@ -47,6 +47,17 @@ export class CategoriesController {
     return this.categoriesService.addCarToCategory(id, addCarToCategory);
   }
 
+  @Patch(':id/remove_car')
+  removeCar(
+    @Param('id') id: string,
+    @Body() removeCarFromCategory: AddCarToCategoryDto,
+  ) {
+    return this.categoriesService.removeCarFromCategory(
+      id,
+      removeCarFromCategory,
+    );
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);
