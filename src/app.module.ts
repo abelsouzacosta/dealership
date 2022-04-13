@@ -7,7 +7,11 @@ import { CategoriesModule } from './categories/categories.module';
 import 'dotenv/config';
 
 @Module({
-  imports: [MongooseModule.forRoot(process.env.MONGO_URI), CarsModule, CategoriesModule],
+  imports: [
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    CarsModule,
+    CategoriesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -4,11 +4,14 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Model } from 'mongoose';
 import { Category } from './entities/category.entity';
+import { AddCarToCategoryDto } from './dto/add-car-to-category.dto';
+import { Car } from 'src/cars/entities/car.entity';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel('Category') private readonly categoryModel: Model<Category>,
+    @InjectModel('Car') private readonly carModel: Model<Car>,
   ) {}
 
   async throwsExceptionIfCategoryNameIsAlreadyTaken(name: string) {
@@ -19,6 +22,12 @@ export class CategoriesService {
         `Category name already taken`,
         HttpStatus.CONFLICT,
       );
+  }
+
+  async thorwsExceptionIfCarNotExists(car_id: string) {
+    const car = await this.carModel.findById(car_id);
+
+    if (!car) throw new HttpException(`Car not found`, HttpStatus.NOT_FOUND);
   }
 
   async throwsExceptionIfCategoryNameIsAlreadyTakenByAnotherInstance(
@@ -62,9 +71,21 @@ export class CategoriesService {
   }
 
   async findOne(id: string): Promise<Category> {
-    const category = await this.categoryModel.findById(id);
+    const category = await this.categoryModel.findById(id).populate('cars');
 
     return category;
+  }
+
+  async addCarToCategory(id: string, { car_id }: AddCarToCategoryDto) {
+    await this.thorwsExceptionIfCarNotExists(car_id);
+    await this.throwsExceptionIfCategoryIsNotFoundById(id);
+
+    await this.categoryModel.updateOne(
+      { _id: id },
+      {
+        $push: { cars: car_id },
+      },
+    );
   }
 
   async update(id: string, { name }: UpdateCategoryDto) {
