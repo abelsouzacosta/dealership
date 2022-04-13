@@ -56,6 +56,23 @@ export class CategoriesService {
       throw new HttpException(`Category not found`, HttpStatus.NOT_FOUND);
   }
 
+  async throwsExceptionIfTheCarIsAlreadySettedToAGivenCategory(
+    category_id: string,
+    car_id: string,
+  ) {
+    await this.throwsExceptionIfCategoryIsNotFoundById(category_id);
+
+    const { cars } = await this.categoryModel.findById(category_id);
+
+    const foundCarInCarsArray = cars.find((car) => String(car._id) === car_id);
+
+    if (foundCarInCarsArray)
+      throw new HttpException(
+        `The car #${car_id} is already ssetted to category #${category_id}`,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+  }
+
   async create({ name }: CreateCategoryDto) {
     await this.throwsExceptionIfCategoryNameIsAlreadyTaken(name);
 
@@ -79,6 +96,10 @@ export class CategoriesService {
   async addCarToCategory(id: string, { car_id }: AddCarToCategoryDto) {
     await this.thorwsExceptionIfCarNotExists(car_id);
     await this.throwsExceptionIfCategoryIsNotFoundById(id);
+    await this.throwsExceptionIfTheCarIsAlreadySettedToAGivenCategory(
+      id,
+      car_id,
+    );
 
     await this.categoryModel.updateOne(
       { _id: id },
