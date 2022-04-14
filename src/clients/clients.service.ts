@@ -33,7 +33,7 @@ export class ClientsService {
     cpf,
     addresses,
     phone_numbers,
-  }: CreateClientDto) {
+  }: CreateClientDto): Promise<void> {
     await this.throwsExceptionIfEmailIsAlreadyTaken(email);
     await this.throwsExceptionIfCpfIsAlreadyTaken(cpf);
     await this.clientModel.create({
