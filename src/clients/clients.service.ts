@@ -96,6 +96,8 @@ export class ClientsService {
     id: string,
     { name, email, cpf, phone_numbers, addresses }: UpdateClientDto,
   ): Promise<void> {
+    await this.throwsExceptionIfInstanceNotFound(id);
+
     await this.throwsExceptionIfTriesToUpdateEmailThatBelongsToAnotherInstance(
       id,
       email,
