@@ -11,11 +11,20 @@ export class ClientsService {
     @InjectModel('Client') private readonly clientModel: Model<Client>,
   ) {}
 
-  private async throwsExceptionIfEmailIsAlreadyTaken(email: string) {
+  private async throwsExceptionIfEmailIsAlreadyTaken(
+    email: string,
+  ): Promise<void> {
     const clientFoundByEmail = await this.clientModel.findOne({ email });
 
     if (clientFoundByEmail)
       throw new HttpException(`Email already taken`, HttpStatus.CONFLICT);
+  }
+
+  private async throwsExceptionIfCpfIsAlreadyTaken(cpf: string): Promise<void> {
+    const clientFoundByCpf = await this.clientModel.findOne({ cpf });
+
+    if (clientFoundByCpf)
+      throw new HttpException(`Cpf already taken`, HttpStatus.CONFLICT);
   }
 
   async create({
@@ -26,7 +35,7 @@ export class ClientsService {
     phone_numbers,
   }: CreateClientDto) {
     await this.throwsExceptionIfEmailIsAlreadyTaken(email);
-
+    await this.throwsExceptionIfCpfIsAlreadyTaken(cpf);
     await this.clientModel.create({
       name,
       email,
