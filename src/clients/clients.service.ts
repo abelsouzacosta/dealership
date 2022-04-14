@@ -41,6 +41,20 @@ export class ClientsService {
       );
   }
 
+  private async throwsExceptionIfTriesToUpdateCpfThatBelongsToAnotherInstace(
+    id: string,
+    cpf: string,
+  ): Promise<void> {
+    const clientFoundById = await this.clientModel.findById(id);
+    const clientFoundByCpf = await this.clientModel.findOne({ cpf });
+
+    if (clientFoundByCpf && clientFoundById._id !== clientFoundByCpf._id)
+      throw new HttpException(
+        `This cpf is already taken by another instance`,
+        HttpStatus.CONFLICT,
+      );
+  }
+
   async create({
     name,
     email,
@@ -79,6 +93,12 @@ export class ClientsService {
       id,
       email,
     );
+
+    await this.throwsExceptionIfTriesToUpdateCpfThatBelongsToAnotherInstace(
+      id,
+      cpf,
+    );
+
     await this.clientModel.updateOne(
       {
         _id: id,
