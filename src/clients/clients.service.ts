@@ -107,7 +107,7 @@ export class ClientsService {
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: string): Promise<void> {
+    await this.clientModel.deleteOne({ _id: id });
   }
 }
