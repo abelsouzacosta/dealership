@@ -57,8 +57,16 @@ export class ClientsService {
     return client;
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(
+    id: string,
+    { name, email, cpf, phone_numbers, addresses }: UpdateClientDto,
+  ): Promise<void> {
+    await this.clientModel.updateOne(
+      {
+        _id: id,
+      },
+      { $set: { name, email, cpf, phone_numbers, addresses } },
+    );
   }
 
   remove(id: number) {
