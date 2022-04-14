@@ -45,12 +45,16 @@ export class ClientsService {
     });
   }
 
-  findAll() {
-    return `This action returns all clients`;
+  async findAll(): Promise<Array<Client>> {
+    const clients = await this.clientModel.find();
+
+    return clients;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findOne(id: string): Promise<Client> {
+    const client = await this.clientModel.findById(id);
+
+    return client;
   }
 
   update(id: number, updateClientDto: UpdateClientDto) {
