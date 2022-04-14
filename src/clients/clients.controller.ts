@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
+import { AddPhoneNumbersDto } from './dto/add-phone-numbers.dto';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 
@@ -33,6 +34,14 @@ export class ClientsController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
     return this.clientsService.update(id, updateClientDto);
+  }
+
+  @Patch(':id/add_phones')
+  addPhoneNumbersToClient(
+    @Param('id') id: string,
+    @Body() addPhoneNumbersDto: AddPhoneNumbersDto,
+  ) {
+    return this.clientsService.addPhoneNumbersToClient(id, addPhoneNumbersDto);
   }
 
   @Delete(':id')
