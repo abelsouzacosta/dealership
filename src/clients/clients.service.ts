@@ -55,6 +55,13 @@ export class ClientsService {
       );
   }
 
+  private async throwsExceptionIfInstanceNotFound(id: string): Promise<void> {
+    const client = await this.clientModel.findById(id);
+
+    if (!client)
+      throw new HttpException(`Client not found`, HttpStatus.NOT_FOUND);
+  }
+
   async create({
     name,
     email,
@@ -108,6 +115,8 @@ export class ClientsService {
   }
 
   async remove(id: string): Promise<void> {
+    await this.throwsExceptionIfInstanceNotFound(id);
+
     await this.clientModel.deleteOne({ _id: id });
   }
 }
