@@ -22,10 +22,10 @@ export class Client {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   cpf: string;
 
   @Prop({ required: true })

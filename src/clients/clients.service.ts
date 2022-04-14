@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -11,6 +11,13 @@ export class ClientsService {
     @InjectModel('Client') private readonly clientModel: Model<Client>,
   ) {}
 
+  private async throwsExceptionIfEmailIsAlreadyTaken(email: string) {
+    const clientFoundByEmail = await this.clientModel.findOne({ email });
+
+    if (clientFoundByEmail)
+      throw new HttpException(`Email already taken`, HttpStatus.CONFLICT);
+  }
+
   async create({
     name,
     email,
@@ -18,6 +25,8 @@ export class ClientsService {
     addresses,
     phone_numbers,
   }: CreateClientDto) {
+    await this.throwsExceptionIfEmailIsAlreadyTaken(email);
+
     await this.clientModel.create({
       name,
       email,
