@@ -27,6 +27,20 @@ export class ClientsService {
       throw new HttpException(`Cpf already taken`, HttpStatus.CONFLICT);
   }
 
+  private async throwsExceptionIfTriesToUpdateEmailThatBelongsToAnotherInstance(
+    id: string,
+    email: string,
+  ): Promise<void> {
+    const clientFoundById = await this.clientModel.findById(id);
+    const clientFoundByEmail = await this.clientModel.findOne({ email });
+
+    if (clientFoundByEmail && clientFoundById._id !== clientFoundByEmail._id)
+      throw new HttpException(
+        `This email is already taken by another instance`,
+        HttpStatus.CONFLICT,
+      );
+  }
+
   async create({
     name,
     email,
@@ -61,6 +75,10 @@ export class ClientsService {
     id: string,
     { name, email, cpf, phone_numbers, addresses }: UpdateClientDto,
   ): Promise<void> {
+    await this.throwsExceptionIfTriesToUpdateEmailThatBelongsToAnotherInstance(
+      id,
+      email,
+    );
     await this.clientModel.updateOne(
       {
         _id: id,
