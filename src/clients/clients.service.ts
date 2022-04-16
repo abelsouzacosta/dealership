@@ -4,7 +4,6 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Model } from 'mongoose';
 import { Client } from './entities/client.entity';
-import { AddPhoneNumbersDto } from './dto/add-phone-numbers.dto';
 
 @Injectable()
 export class ClientsService {
@@ -63,21 +62,13 @@ export class ClientsService {
       throw new HttpException(`Client not found`, HttpStatus.NOT_FOUND);
   }
 
-  async create({
-    name,
-    email,
-    cpf,
-    addresses,
-    phone_numbers,
-  }: CreateClientDto): Promise<void> {
+  async create({ name, email, cpf }: CreateClientDto): Promise<void> {
     await this.throwsExceptionIfEmailIsAlreadyTaken(email);
     await this.throwsExceptionIfCpfIsAlreadyTaken(cpf);
     await this.clientModel.create({
       name,
       email,
       cpf,
-      addresses,
-      phone_numbers,
     });
   }
 
@@ -95,7 +86,7 @@ export class ClientsService {
 
   async update(
     id: string,
-    { name, email, cpf, phone_numbers, addresses }: UpdateClientDto,
+    { name, email, cpf }: UpdateClientDto,
   ): Promise<void> {
     await this.throwsExceptionIfInstanceNotFound(id);
 
@@ -113,7 +104,7 @@ export class ClientsService {
       {
         _id: id,
       },
-      { $set: { name, email, cpf, phone_numbers, addresses } },
+      { $set: { name, email, cpf } },
     );
   }
 
@@ -121,19 +112,5 @@ export class ClientsService {
     await this.throwsExceptionIfInstanceNotFound(id);
 
     await this.clientModel.deleteOne({ _id: id });
-  }
-
-  async addPhoneNumbersToClient(
-    id: string,
-    { phone_numbers }: AddPhoneNumbersDto,
-  ): Promise<void> {
-    for (const number of phone_numbers) {
-      await this.clientModel.updateOne(
-        { _id: id },
-        {
-          $push: { phone_numbers: number },
-        },
-      );
-    }
   }
 }

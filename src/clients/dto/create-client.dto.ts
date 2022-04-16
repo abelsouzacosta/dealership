@@ -1,5 +1,4 @@
-import { IsArray, IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Address, PhoneNumber } from '../entities/client.entity';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateClientDto {
   @IsString()
@@ -14,12 +13,4 @@ export class CreateClientDto {
   @IsString()
   @IsNotEmpty()
   cpf: string;
-
-  @IsArray()
-  @IsNotEmpty()
-  phone_numbers: PhoneNumber[];
-
-  @IsArray()
-  @IsNotEmpty()
-  addresses: Address[];
 }
