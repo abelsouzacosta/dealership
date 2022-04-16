@@ -12,14 +12,14 @@ import {
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { PhoneNumberValidationPipe } from './pipes/phone-number-validation.pipe';
+import { CreateClientValidationPipe } from './pipes/create-client-validation.pipe';
 
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
-  @UsePipes(ValidationPipe, PhoneNumberValidationPipe)
+  @UsePipes(ValidationPipe, CreateClientValidationPipe)
   create(@Body() data: CreateClientDto) {
     return this.clientsService.create(data);
   }

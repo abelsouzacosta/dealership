@@ -10,7 +10,7 @@ import { plainToClass } from 'class-transformer';
 import { Client, PhoneNumberType } from '../entities/client.entity';
 
 @Injectable()
-export class PhoneNumberValidationPipe implements PipeTransform {
+export class CreateClientValidationPipe implements PipeTransform {
   private isEmpty(value: any): boolean {
     if (Object.keys(value).length < 1) {
       return true;
