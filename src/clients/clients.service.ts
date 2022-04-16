@@ -62,13 +62,19 @@ export class ClientsService {
       throw new HttpException(`Client not found`, HttpStatus.NOT_FOUND);
   }
 
-  async create({ name, email, cpf }: CreateClientDto): Promise<void> {
+  async create({
+    name,
+    email,
+    cpf,
+    phone_numbers,
+  }: CreateClientDto): Promise<void> {
     await this.throwsExceptionIfEmailIsAlreadyTaken(email);
     await this.throwsExceptionIfCpfIsAlreadyTaken(cpf);
     await this.clientModel.create({
       name,
       email,
       cpf,
+      phone_numbers,
     });
   }
 
