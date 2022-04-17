@@ -6,7 +6,7 @@ import {
   IsNotEmpty,
   IsString,
 } from 'class-validator';
-import { PhoneNumber } from '../entities/client.entity';
+import { Address, PhoneNumber } from '../entities/client.entity';
 
 export class CreateClientDto {
   @IsString()
@@ -25,6 +25,11 @@ export class CreateClientDto {
   @IsArray()
   @IsNotEmpty()
   @ArrayMinSize(1)
-  @ArrayMaxSize(3)
+  @ArrayMaxSize(3) // TODO: remove phone number array max size
   phone_numbers: PhoneNumber[];
+
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayMinSize(1)
+  addresses: Address[];
 }

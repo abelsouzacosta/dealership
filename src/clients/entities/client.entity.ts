@@ -17,8 +17,33 @@ export class PhoneNumber {
   @Prop({ required: true, type: Boolean, default: true })
   active: boolean;
 }
-
 const PhoneNumberSchema = SchemaFactory.createForClass(PhoneNumber);
+
+@Schema({ _id: false })
+export class Address {
+  @Prop({ required: false, type: String, default: 'Brasil' })
+  country?: string;
+
+  @Prop({ required: true })
+  state: string;
+
+  @Prop({ required: true })
+  city: string;
+
+  @Prop({ required: true })
+  district: string;
+
+  @Prop({ required: true })
+  street: string;
+
+  @Prop({ required: true })
+  number: number;
+
+  @Prop({ required: true })
+  zipcode: string;
+}
+
+export const AddressSchema = SchemaFactory.createForClass(Address);
 
 @Schema({
   timestamps: true,
@@ -36,6 +61,9 @@ export class Client {
 
   @Prop({ required: true, type: [PhoneNumberSchema] })
   phone_numbers: PhoneNumber[];
+
+  @Prop({ required: true, type: [AddressSchema] })
+  addresses: Address[];
 }
 
 export const ClientSchema = SchemaFactory.createForClass(Client);

@@ -67,6 +67,7 @@ export class ClientsService {
     email,
     cpf,
     phone_numbers,
+    addresses,
   }: CreateClientDto): Promise<void> {
     await this.throwsExceptionIfEmailIsAlreadyTaken(email);
     await this.throwsExceptionIfCpfIsAlreadyTaken(cpf);
@@ -75,6 +76,7 @@ export class ClientsService {
       email,
       cpf,
       phone_numbers,
+      addresses,
     });
   }
 
