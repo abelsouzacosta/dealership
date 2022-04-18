@@ -4,6 +4,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Model } from 'mongoose';
 import { Client } from './entities/client.entity';
+import { CreatePhoneDto } from './dto/create-phone.dto';
 
 @Injectable()
 export class ClientsService {
@@ -120,5 +121,17 @@ export class ClientsService {
     await this.throwsExceptionIfInstanceNotFound(id);
 
     await this.clientModel.deleteOne({ _id: id });
+  }
+
+  async addPhoneNumbers(
+    id: string,
+    phone_number: CreatePhoneDto,
+  ): Promise<void> {
+    await this.clientModel.updateOne(
+      { _id: id },
+      {
+        $push: { phone_numbers: phone_number },
+      },
+    );
   }
 }
