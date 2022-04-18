@@ -1,5 +1,6 @@
 import {
   ArgumentMetadata,
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -8,6 +9,7 @@ import {
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { Client, PhoneNumberType } from '../entities/client.entity';
+import { CreateAddressDto } from '../dto/create-address.dto';
 
 @Injectable()
 export class CreateClientValidationPipe implements PipeTransform {
@@ -26,13 +28,13 @@ export class CreateClientValidationPipe implements PipeTransform {
           return error.constraints[key];
         }
       })
-      .join(', ');
+      .join(' - ');
   }
 
   async transform(value: Client, metadata: ArgumentMetadata) {
     const { metatype } = metadata;
 
-    const { phone_numbers } = value;
+    const { phone_numbers, addresses } = value;
     const phoneNumberTypeKeys = Object.keys(PhoneNumberType);
 
     for (const phone_number of phone_numbers) {
@@ -42,6 +44,16 @@ export class CreateClientValidationPipe implements PipeTransform {
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
+    }
+
+    for (const address of addresses) {
+      const object = plainToClass(CreateAddressDto, address);
+      const errors = await validate(object);
+
+      if (errors.length > 0)
+        throw new BadRequestException(
+          `Validation failed: ${this.formatErrors(errors)}`,
+        );
     }
 
     if (this.isEmpty(value))
