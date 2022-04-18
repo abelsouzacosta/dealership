@@ -24,6 +24,8 @@ const PhoneNumberSchema = SchemaFactory.createForClass(PhoneNumber);
 
 @Schema({})
 export class Address {
+  _id: ObjectId;
+
   @Prop({ required: false, type: String, default: 'Brasil' })
   country?: string;
 

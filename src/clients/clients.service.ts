@@ -12,6 +12,7 @@ import { Client } from './entities/client.entity';
 import { CreatePhoneDto } from './dto/create-phone.dto';
 import { RemovePhoneDto } from './dto/remove-phone.dto';
 import { CreateAddressDto } from './dto/create-address.dto';
+import { RemoveAddressDto } from './dto/remove-address.dto';
 
 @Injectable()
 export class ClientsService {
@@ -80,7 +81,21 @@ export class ClientsService {
       (number) => String(number._id) === phone_id,
     );
 
-    if (!phone) throw new NotFoundException(`Phone not found for the user`);
+    if (!phone) throw new NotFoundException(`Phone not found for the client`);
+  }
+
+  private async throwsExceptionIfAddressIsNotSettedToTheClient(
+    id: string,
+    address_id: string,
+  ) {
+    const { addresses } = await this.clientModel.findById(id);
+
+    const address = addresses.find(
+      (address) => String(address._id) === address_id,
+    );
+
+    if (!address)
+      throw new NotFoundException(`Address not found for the client`);
   }
 
   async create({
@@ -179,6 +194,26 @@ export class ClientsService {
     await this.clientModel.updateOne(
       { _id: id },
       { $push: { addresses: address } },
+    );
+  }
+
+  async removeAddress(id: string, { address_id }: RemoveAddressDto) {
+    const { addresses } = await this.clientModel.findById(id);
+    await this.throwsExceptionIfAddressIsNotSettedToTheClient(id, address_id);
+
+    const address = addresses.find(
+      (address) => String(address._id) === address_id,
+    );
+
+    const indexOfAddress = addresses.indexOf(address);
+
+    addresses.splice(indexOfAddress, 1);
+
+    const newAddressesArray = addresses;
+
+    await this.clientModel.updateOne(
+      { _id: id },
+      { $set: { addresses: newAddressesArray } },
     );
   }
 }
