@@ -10,6 +10,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
+import { CreateAddressDto } from './dto/create-address.dto';
 import { CreateClientDto } from './dto/create-client.dto';
 import { CreatePhoneDto } from './dto/create-phone.dto';
 import { RemovePhoneDto } from './dto/remove-phone.dto';
@@ -50,6 +51,15 @@ export class ClientsController {
   @UsePipes(ValidationPipe)
   addPhones(@Param('id') id: string, @Body() addPhoneToClient: CreatePhoneDto) {
     return this.clientsService.addPhoneNumbers(id, addPhoneToClient);
+  }
+
+  @Patch(':id/add_address')
+  @UsePipes(ValidationPipe)
+  addAddress(
+    @Param('id') id: string,
+    @Body() addAddressToClient: CreateAddressDto,
+  ) {
+    return this.clientsService.addAddress(id, addAddressToClient);
   }
 
   @Patch(':id/remove_phone')

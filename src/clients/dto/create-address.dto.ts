@@ -9,6 +9,8 @@ import {
 } from 'class-validator';
 
 export class CreateAddressDto {
+  country?: string;
+
   @IsString()
   @IsNotEmpty({
     message: 'City must be provided for the client address',

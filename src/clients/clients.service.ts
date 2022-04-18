@@ -11,6 +11,7 @@ import { Model } from 'mongoose';
 import { Client } from './entities/client.entity';
 import { CreatePhoneDto } from './dto/create-phone.dto';
 import { RemovePhoneDto } from './dto/remove-phone.dto';
+import { CreateAddressDto } from './dto/create-address.dto';
 
 @Injectable()
 export class ClientsService {
@@ -171,6 +172,13 @@ export class ClientsService {
     await this.clientModel.updateOne(
       { _id: id },
       { $set: { phone_numbers: newPhoneNumbersArray } },
+    );
+  }
+
+  async addAddress(id: string, address: CreateAddressDto) {
+    await this.clientModel.updateOne(
+      { _id: id },
+      { $push: { addresses: address } },
     );
   }
 }
