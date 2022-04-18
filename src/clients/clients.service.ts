@@ -1,9 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Model } from 'mongoose';
 import { Client } from './entities/client.entity';
+import { CreatePhoneDto } from './dto/create-phone.dto';
+import { RemovePhoneDto } from './dto/remove-phone.dto';
+import { CreateAddressDto } from './dto/create-address.dto';
+import { RemoveAddressDto } from './dto/remove-address.dto';
 
 @Injectable()
 export class ClientsService {
@@ -60,6 +69,33 @@ export class ClientsService {
 
     if (!client)
       throw new HttpException(`Client not found`, HttpStatus.NOT_FOUND);
+  }
+
+  private async throwsExceptionIfNumberIsNotSettedToTheClient(
+    id: string,
+    phone_id: string,
+  ): Promise<void> {
+    const { phone_numbers } = await this.clientModel.findById(id);
+
+    const phone = phone_numbers.find(
+      (number) => String(number._id) === phone_id,
+    );
+
+    if (!phone) throw new NotFoundException(`Phone not found for the client`);
+  }
+
+  private async throwsExceptionIfAddressIsNotSettedToTheClient(
+    id: string,
+    address_id: string,
+  ) {
+    const { addresses } = await this.clientModel.findById(id);
+
+    const address = addresses.find(
+      (address) => String(address._id) === address_id,
+    );
+
+    if (!address)
+      throw new NotFoundException(`Address not found for the client`);
   }
 
   async create({
@@ -120,5 +156,64 @@ export class ClientsService {
     await this.throwsExceptionIfInstanceNotFound(id);
 
     await this.clientModel.deleteOne({ _id: id });
+  }
+
+  async addPhoneNumbers(
+    id: string,
+    phone_number: CreatePhoneDto,
+  ): Promise<void> {
+    await this.clientModel.updateOne(
+      { _id: id },
+      {
+        $push: { phone_numbers: phone_number },
+      },
+    );
+  }
+
+  async removePhoneNumber(id: string, { phone_id }: RemovePhoneDto) {
+    const { phone_numbers } = await this.clientModel.findById(id);
+    await this.throwsExceptionIfNumberIsNotSettedToTheClient(id, phone_id);
+
+    const phone = phone_numbers.find(
+      (number) => String(number._id) === phone_id,
+    );
+
+    const indexOfPhone = phone_numbers.indexOf(phone);
+
+    phone_numbers.splice(indexOfPhone, 1);
+
+    const newPhoneNumbersArray = phone_numbers;
+
+    await this.clientModel.updateOne(
+      { _id: id },
+      { $set: { phone_numbers: newPhoneNumbersArray } },
+    );
+  }
+
+  async addAddress(id: string, address: CreateAddressDto) {
+    await this.clientModel.updateOne(
+      { _id: id },
+      { $push: { addresses: address } },
+    );
+  }
+
+  async removeAddress(id: string, { address_id }: RemoveAddressDto) {
+    const { addresses } = await this.clientModel.findById(id);
+    await this.throwsExceptionIfAddressIsNotSettedToTheClient(id, address_id);
+
+    const address = addresses.find(
+      (address) => String(address._id) === address_id,
+    );
+
+    const indexOfAddress = addresses.indexOf(address);
+
+    addresses.splice(indexOfAddress, 1);
+
+    const newAddressesArray = addresses;
+
+    await this.clientModel.updateOne(
+      { _id: id },
+      { $set: { addresses: newAddressesArray } },
+    );
   }
 }
