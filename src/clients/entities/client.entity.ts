@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ObjectId } from 'mongoose';
 
 export enum PhoneNumberType {
   Comercial = 'Comercial',
@@ -8,6 +9,8 @@ export enum PhoneNumberType {
 
 @Schema({})
 export class PhoneNumber {
+  _id: ObjectId;
+
   @Prop({ required: true, enum: PhoneNumberType })
   type: string;
 

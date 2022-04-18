@@ -1,10 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Model } from 'mongoose';
 import { Client } from './entities/client.entity';
 import { CreatePhoneDto } from './dto/create-phone.dto';
+import { RemovePhoneDto } from './dto/remove-phone.dto';
 
 @Injectable()
 export class ClientsService {
@@ -61,6 +67,19 @@ export class ClientsService {
 
     if (!client)
       throw new HttpException(`Client not found`, HttpStatus.NOT_FOUND);
+  }
+
+  private async throwsExceptionIfNumberIsNotSettedToTheClient(
+    id: string,
+    phone_id: string,
+  ): Promise<void> {
+    const { phone_numbers } = await this.clientModel.findById(id);
+
+    const phone = phone_numbers.find(
+      (number) => String(number._id) === phone_id,
+    );
+
+    if (!phone) throw new NotFoundException(`Phone not found for the user`);
   }
 
   async create({
@@ -132,6 +151,26 @@ export class ClientsService {
       {
         $push: { phone_numbers: phone_number },
       },
+    );
+  }
+
+  async removePhoneNumber(id: string, { phone_id }: RemovePhoneDto) {
+    const { phone_numbers } = await this.clientModel.findById(id);
+    await this.throwsExceptionIfNumberIsNotSettedToTheClient(id, phone_id);
+
+    const phone = phone_numbers.find(
+      (number) => String(number._id) === phone_id,
+    );
+
+    const indexOfPhone = phone_numbers.indexOf(phone);
+
+    phone_numbers.splice(indexOfPhone, 1);
+
+    const newPhoneNumbersArray = phone_numbers;
+
+    await this.clientModel.updateOne(
+      { _id: id },
+      { $set: { phone_numbers: newPhoneNumbersArray } },
     );
   }
 }
