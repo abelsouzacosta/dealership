@@ -6,7 +6,7 @@ export enum PhoneNumberType {
   Pessoal = 'Pessoal',
 }
 
-@Schema({ _id: false })
+@Schema({})
 export class PhoneNumber {
   @Prop({ required: true, enum: PhoneNumberType })
   type: string;
@@ -19,7 +19,7 @@ export class PhoneNumber {
 }
 const PhoneNumberSchema = SchemaFactory.createForClass(PhoneNumber);
 
-@Schema({ _id: false })
+@Schema({})
 export class Address {
   @Prop({ required: false, type: String, default: 'Brasil' })
   country?: string;
